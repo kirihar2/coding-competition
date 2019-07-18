@@ -12,4 +12,4 @@ def partition(arr,low,high):
 def quick_sort(arr,low, high): 
 
     qi = partition(arr,low,high)    
-    return 
+    return qi

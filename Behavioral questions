@@ -1,0 +1,27 @@
+Behavioral questions
+
+facebook:
+	* self-starter that tackle hard problems
+	* collaboration
+
+* Challenges, we were working with service that used kafka to connect with a system with another team within the firm.
+	* We were having issues with part of our filtering logic we put in place to determine what get data gets sent out to the other team.
+	* this is an all or nothing data, so imagine the entire data model getting sent out onto kafka
+	* the filtering logic can exist at the query level or java code level, which became a problem since the existing tests did not cover business logic that happened at the query level
+	* so used the hibernate persistence context builder to build a persistence context with a h2database and register all entities used for the application
+	* populated the in-memory db with pre-populated data
+	* this greatly reduce development time by running the tests with valid test cases that added any additional filtering logic
+
+* Account locking was becoming an issue with one of our functional accounts, becuase the password was being managed outside of our service
+	* to remedy this, I implemented a password renewing logic in case the service tries to create a new connection  ( one for database )
+	* another case was for one of our functional accounts for use with OpenId Oauth2. Retrieving the token requires a password for the account, but again the password gets rotated outside of the service. 
+	* This reduced deployments on Saturday that was just to restart the services when the account password was rotated
+
+Leadership
+*
+Teamwork
+* With the integration with the other teams of our data, there were times 
+
+
+
+STAR format

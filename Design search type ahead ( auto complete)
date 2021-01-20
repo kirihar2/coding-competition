@@ -1,0 +1,97 @@
+Design search type ahead ( auto complete)
+
+list a top few hits starting with the input string
+
+list top 5
+
+spelling mistakes?
+should suggest michael if input is mik
+
+what criteria is the top 5?
+typed phrase as a strict prefix
+with popularity defined by number of searche ain the past
+
+realtime system? yes
+
+personaliztion? no
+
+--- 
+
+2 parts to the system
+* a user can query the system for top 5 suggestions withe a query prefix
+* every search query done should feed into the system to update the suggestions
+
+how many queries each day? 2-4 billion
+per second 24 * 3600 
+80 million - 160 million per day
+22000 - 44000 qps
+
+every keystroke is a query
+4 billion 
+5 words  -> 25 chars 
+100 billion per day
+44000 * 25 = 1.1 million
+
+
+how much data to store?
+how many new queries? 15% and 500 million new queries
+25 letters on average for each query 12.5 GB per day
+hold for last 10 years
+10*12.5*365 = 50TB 
+
+-- 
+latency: very important, slow queries will be bad user experience if they cannot see the result as they're typing
+availability is more important since latency is importatn
+
+-- 
+
+given a query give me 5 most frequent search terms with query as string prefix
+
+getFrequentQuery(string prefix) {return string [5] {top 5 results}}
+updateFrequency(string searchTerm) {return}
+
+Trie since we have to deal with prefix strings 
+
+how would a read query look?
+traverse through tree and get the top 5 most popular results at that node
+
+how would a write query look?
+traverse down the trie until a leaf node and update the frequency of that search term at each level
+
+
+--- 
+
+application fault tolerance
+multiple instances with load balancer in front.
+
+
+database layer:
+
+how would a read query on the trie work?
+	* will store the data of the top 5 queries at each node
+
+how would a write work:
+	* traverse down the trie and update the search frequency of the phrase at each node
+
+can frequent writes affect read efficiency:
+yes we need to lock the node to make sure the reader thread does not get an inconsistent value
+
+optimization to improve read efficiency:
+* can use master slave so reads only go to slave and master propagates the changes down to the slave __ cannot use this because it will not be real time anymore
+* use sampling for updating the query to 1 in 1000 or something larger
+* caching 
+
+data will not fit in single machine
+
+How to shard the data:
+can't shard based on  first level (first character because certain letters contains more queries than others)
+If we have a master that holds the first few levels (2-3 layers) it can route to the correct shard after that
+
+handle db machine going down:
+Replicate each shard and make the update go to all shards 
+read can go to one or more shards depending on the desired consistency level
+
+
+
+
+

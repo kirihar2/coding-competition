@@ -1,0 +1,112 @@
+Design url shortening service
+
+goal is to encode the url in a way that is unique, but shorter than the original url
+
+should have a one to one mapping for the shortened url to an existing url
+
+should shorten the same url to the same shortened url to be able to reverse lookup (i.e. check if there is a shortened url already)
+
+custom shortened url
+
+
+qps? 100 Million urls per month
+* assuming shortened url lives for about 2 weeks
+* assuming 20% of websites creates 80% of traffic 
+1 Billion queries in a month
+33 million query each day
+1.4 million each hour
+400 qps
+
+read heavy, 1/10 ratio or write to read
+400 qps -> 40 writes per sec + 360 read per second
+
+how much data to store, 
+100million urls per month
+for the next 5 years,
+1.2 billion a year, 5 years 6 billion entries
+minimum length to support 6 billion urls
+(a-zA-Z0-9) 62 possible chars
+x^62 = 6 billion
+log62(6 billion) = 6
+
+URL max chars 500 chars? 
+3TB of actual url
+36 GB of shortened url
+
+data read/write per second
+400 qps
+360 reads per second transfer 500Bytes
+180 kB per second
+
+40 write per second for 500 Bytes
+20kB per second
+
+
+latency: failing request is probably okay, high latency is bad
+consistency: 
+availability:
+
+could go with either, with consistency you always get a valid url
+with availablity you get speed, but could land on a non existent page
+
+API defition:
+
+- to create a new shortened URL,
+	* which either you can specify a shrotened URL
+	* or it gives a default
+- one to get/ convert shortened URL to actual URL
+	* 
+
+write query will be 
+generate shortened hash for the url and store the hash -> url mapping 
+
+read query
+take a hash and return the url mapping back to client
+
+
+
+how to compute hash of URL 
+goal hash to 6 chars
+convert to base 62 to md5 and original_url  + salt (for collision handeling) [:6]
+need md5 forarandomization
+
+
+application layer fault tolerance:
+run multiple instances of the application to resolve, since storage does not get affected
+
+run the instances behind a load balancer to not send requests to servers that are down
+
+What data to store?
+hash, original_url, analytics?
+
+
+RDBMS or NOSQL
+3TB can fit on one machine, but indexes may not
+no need for joins
+read latency may be impacted because it will do disk reads 
+
+NOSQL is good choice 
+
+
+Database schema:
+hash will be the key and value will be the URL
+
+Sharding:
+consistent hashing is optional, because the total data size is relatively small
+
+Handle db failures:
+NOSQL again has single machine failure handling build in. HBase would have an availability issue for a few seconds for affected keys for tight consistency
+
+optimize read queries,
+add memcache to the db layer, as well as update loadbalancer to hit the same db for that memcache to be valid
+
+
+could shard the data if using SQL DB:
+shard by the hash value, using consistent hashing
+0-61 char values, so integer encoding the hash value. Integers have max 2^32 10^13 and share that hash between db shards
+
+Handle machine dying in case of SQL DB,
+~~~~will need to store the same key across different shards in case of machine failure. 
+can use master slave in this case, and if master dies one of the slaves can become a master
+
+

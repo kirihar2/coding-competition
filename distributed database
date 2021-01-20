@@ -1,0 +1,42 @@
+distributed database
+
+read traffic > write 
+simple days
+as increase in read traffic, create read replication 
+
+sharding relational database
+spliting physical storage based on key
+negative: cannot join accross shards 
+
+if read is non performant, then denormalize the read 
+
+non relational db
+* consistent hashing
+replication, store the same key value along the hash ring with the replication factor
+
+consistency:
+R+W > N (replication factor)
+
+R = number of nodes to read when querying
+W = number of nodes to write to
+
+N = Replication factor
+
+1+1 > 3 (eventually consistent)
+2+2 > 3 (consistent)
+
+client library should handle such cases 
+
+
+CAP theorem
+consistency 
+availability
+partition tolerant
+
+
+Distributed computation
+
+mapreduce is an option, but not easy
+
+hadoop
+

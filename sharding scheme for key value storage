@@ -1,0 +1,36 @@
+sharding scheme for key value storage
+
+
+what is the amount of data we need to store
+few 100TB
+
+how frequent does the data grow each day
+1TB per day
+
+what do the storage machines specs look like?
+RAM 72GB disk capacity 10TB
+
+how many machine is available 
+20
+
+are all key value entries independent?
+yes
+
+
+
+at least 10 machines for pure disk capacity
+which would mean we have 720GB of memorya
+
+how frequently would we need to add machines, 
+every 8 days if we want storage utilization of 80%
+
+no we cannot have  afixed number of shards because one requirement for a shard is that it fits in one machine
+
+how many shards do we have and how do we distribute the data within the shard
+simple sharding will hash H and shard will be hash%#shards
+but as soon as we add an extra shard we would need to recalculate the hash and relocate each key
+very costly 
+
+better sharding strategy:
+consistent hashing
+

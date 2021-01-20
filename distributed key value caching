@@ -1,0 +1,43 @@
+distributed key value caching
+
+how much data do we need to cache
+
+is the cache read heavy or write heavy
+
+do we need to handle race coditions if multiple apps are writing to the same key value
+if so what would be the read by the app?
+
+eviction strategy
+
+access pattern for th ecache
+* write through cache - writes go through the cache and go directly to db then update the cache, read latency low, but write latency is high
+* write around cache - writes go directly to db and when reading will pull new data, faster write, slower read
+* write back cache - write to cache and async to db, fast write and fast read, but risk losing data 
+
+
+30TB,
+what is the query per second (QPS)
+10M total QPS if not more 
+- if a single machine is handling this load, the latency will be very high because there will be a backlog of queries not being answered
+
+what is the number of machines required to cache?
+assuming caching machine can handle 72GB of cache
+30TB/72GB = 420 machines
+
+
+
+Latency - is this problem latency sensitive (are requests with high latency and a failing request hold the same weight)
+Consistency - does this problem require tight consistency or is it okay if things are eventually consistent
+Avalaibility - does this problem require 100% availability? 
+
+latency and availability is prioritized
+
+most accessed key are kept at the top of hthe cache, priotized more
+if the key is not accessed
+
+use priority queue, or heap.
+
+https://gist.github.com/jboner/2841832
+
+
+

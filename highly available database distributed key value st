@@ -1,0 +1,69 @@
+highly available database distributed key value store network partition tolerant
+
+key value, 
+
+data load? TB PB 100TB
+
+data growth?
+
+QPS? 100K
+
+support updates? yes to key value pairs
+
+size of value fo ra key increase with updates? yes, if value becomes big enough it can move to a different server
+
+does one value fit in one machine? Yes 1GB cap for value
+
+
+--- 
+minimum number of machiens 
+100TB, with 10TB hdd machines then need 10 machines.
+depends on replication and sharding for lowering qps on each machine
+
+latency - since availablility is important, the latency has to be low
+consistency - not very important availability isaimportant
+availablility - also important as machine failures can happen an data loss is not acceptable
+
+
+do we need to shard
+
+yes, since we cannot store 100TB of data on one machine should distribute the data across machine to increase performance as well.
+it is not scalable if we were to store the same copy of data across machines
+
+should the data be normalized
+no, since if we need to join across tables and across rows toafetch data.
+Since the data is already sharded the joins across machines will not be ideal (high latency)
+denomalized the data is not consistent, since same field can be stored in more than one place, but the data will be on the same machine
+
+how many machines per shard how does a read / write lock in every shard
+100K qps across
+if master/slave node
+	* not ideal
+	* if master fails over then the write will not go through and miss data
+	* if multi master, there's a risk that master1 and master2 gets different update on the same row
+		which will cause eventual inconsistency
+
+if peer to peer node, be highly available in case of DB machines dying
+	* yes, since with peer to peer node, every node is equally privileged and any two nodes can communicate
+	* no single point offailure, 
+	* dynamo na dcassandra are such cases
+
+How to shard data in case of peer to peer system:
+
+Consistent hashing
+
+How do we manage redundant data
+* copy the same key to machines to couter clockwise of the hash circle or x number of machines.
+
+How would a write look for our system
+* should write to one or more machine in case that the write machine fails before replicating the data
+since eventual consistency is okay, ideally should limit the number of machines to read and write
+
+read from one machine
+write to P machines ( number of partition/replication )
+
+Consistency
+perhaps reduce strong consistency with writes to increase availablity, eventual consistency.
+write to less than P machines so at least some machines will have the data, some will not, and some will have stale copy
+
+Last write wins for resolving conflict in case same key with different values exists when managing eventual consistency

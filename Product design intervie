@@ -1,0 +1,27 @@
+Product design intervie 
+
+storage data models
+scalability 
+design patterns 
+data ownership
+protocols
+data formates 
+client server design
+desgin for long term vs complexity
+accommodating possible product changes
+
+
+design a service or product API
+design a chat service or feed API
+
+
+Typical questions
+ex. chat room
+number of users?
+number of messages sent?
+number of messages read?
+latency requirement?
+how long are messages stored
+is it create only? can you edit old messages
+(CRUD)?
+what operation to optimize for?
